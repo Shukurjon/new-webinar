@@ -10,11 +10,14 @@ import java.util.logging.Logger;
 /**
  * Created by shukur on 06/09/17.
  */
-public class ArrayStorage implements IStorage {
+public class ArrayStorage extends AbsrtactStorage {
     private static final int LIMIT = 100;
-
+//Логи, или журнал действий пользователя, помогает тестировщикам понять, что означает ошибка,
+// а также - откуда она взялась.
+    //
     protected Logger LOGGER = Logger.getLogger(getClass().getName());
 
+// если у нас один класс то мы можем использовать - static
 
 
     private Resume[] array = new Resume[LIMIT];   //alt+ctrl+c выделяется константа
@@ -33,7 +36,7 @@ public class ArrayStorage implements IStorage {
     }
 
     @Override
-    public void save(Resume r) {
+    public void save(Resume r)  {
 
         /*for (int i = 0;i<LIMIT;i++){
     Resume resume = array[i];
@@ -45,7 +48,8 @@ public class ArrayStorage implements IStorage {
 }
 */
 
-        LOGGER.info("save resume with uuid"+r.getUuid());
+        logger.info("save resume with uuid"+r.getUuid());
+
 /*
 for (int i =0; i<LIMIT;i++){
     if (array[i]==null){
@@ -53,13 +57,27 @@ for (int i =0; i<LIMIT;i++){
     }
 }
 */
- int idx = getIndex(r.getUuid());
- if (idx != -1) throw new WebAppException("Resume"+r.getUuid()+"already exist",r);
-    array[size++]=r;
+
     }
 
     @Override
-    public void update(Resume r) {
+    protected void doSave(Resume r) {
+
+         int idx = getIndex(r.getUuid());
+ if (idx != -1) try {
+     throw new WebAppException("Resume"+r.getUuid()+"already exist",r);
+ } catch (WebAppException e) {
+     e.printStackTrace();
+ }
+        array[size++]=r;
+    }
+
+    public ArrayStorage(Logger LOGGER) {
+        this.LOGGER = LOGGER;
+    }
+
+    @Override
+    public void update(Resume r) throws WebAppException {
 LOGGER.info("Update reseme with uuid"+r.getUuid());
 int idx = getIndex(r.getUuid());
 if (idx==-1) throw new WebAppException("Resume"+r.getUuid()+"not exist",r);
@@ -72,7 +90,7 @@ array[idx]=r;
     }
 
     @Override
-    public void delete(String uuid) {
+    public void delete(String uuid) throws WebAppException {
 LOGGER.info("Delete resume with uuid"+uuid);
 int idx = getIndex(uuid);                                    //shift+F6 - все переменные менят за одно
 if (idx==-1)throw new WebAppException("Resume"+ uuid+"not exist");
@@ -84,6 +102,7 @@ if (idx==-1)throw new WebAppException("Resume"+ uuid+"not exist");
 
     @Override
     public Collection<Resume> getAllSorted() {
+        // TODO via comparator
         Arrays.sort(array, 0, size);
         return Arrays.asList(Arrays.copyOf(array,size));
     }
@@ -93,7 +112,7 @@ if (idx==-1)throw new WebAppException("Resume"+ uuid+"not exist");
         return size;
     }
 
-    public int getIndex(String uuid) {
+    private int getIndex(String uuid) {
         for (int i = 0; i < LIMIT; i++) {
             if (array[i] != null) {
                 if (array[i].getUuid().equals(uuid)) {
@@ -104,5 +123,6 @@ if (idx==-1)throw new WebAppException("Resume"+ uuid+"not exist");
         return -1;
 
     }
+
 }
 

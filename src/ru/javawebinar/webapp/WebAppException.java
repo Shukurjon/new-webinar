@@ -5,17 +5,16 @@ import ru.javawebinar.webapp.model.Resume;
 /**
  * Created by shukur on 07/09/17.
  */
-public class WebAppException extends RuntimeException{
+public class WebAppException extends Exception{
     private Resume resume = null;
     private String uuid = null;
 
     public WebAppException(String message) {
         super(message);
-
     }
-public WebAppException(String message,Throwable e) {
-        super(message,e);
 
+    public WebAppException(String message,Throwable e) {
+        super(message,e);
     }
 
     public WebAppException(String message,Resume resume) {
@@ -27,12 +26,12 @@ public WebAppException(String message,Resume resume,Throwable e) {
         this.resume = resume;
     }
 
-    /*
-    public WebAppException(String s, Resume resume) {
-        super(s);
-        this.resume = resume;
+
+    public WebAppException(String message, String uuid) {
+        super(message);
+        this.uuid = uuid;
     }
-*/
+
 
 /*
     public WebAppException(String s, Throwable throwable, Resume resume) {
@@ -46,10 +45,10 @@ public WebAppException(String message,Resume resume,Throwable e) {
         this.resume = resume;
     }*/
 
-    public WebAppException(String message, String uuid) {
+   /* public WebAppException(String message, String uuid) {
         super(message);
         this.uuid = uuid;
-    }
+    }*/
 
     public Resume getResume() {
         return resume;
